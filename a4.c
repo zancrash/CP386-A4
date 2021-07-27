@@ -21,15 +21,27 @@
 #include <semaphore.h>
 #include <stdbool.h>
 
-int allocated[4] = {};
-int max[4] = {};
-int available[4] = {};
-int needs[4] = {};
+#define FILE_IN "sample4_in.txt"
+#define MAX_INPUT_SIZE 256
 
-typedef struct customer{
-    int customerID;
+// int allocated[4] = {}; // array to store allocated resources.
+// int max[4] = {}; // array to store maximum required resources.
+// int available[4] = {}; // array to store available resources.
+// int needs[4] = {}; // array to store how many more resources are needed.
+
+int customer;
+int resource_type;
+int safe;
+
+int **allocated; // point to allocated resources
+int **max; // point to max resources
+int *available; // point to available resources
+int **needs; // point to resources still needed
+
+// typedef struct customer{
+//     int customerID;
     
-} Customer;
+// } Customer;
 
 // from a2 q3, repurpose
 int readFile(char* fileName, Thread** threads)//use this method in a suitable way to read file
@@ -79,30 +91,54 @@ int readFile(char* fileName, Thread** threads)//use this method in a suitable wa
 		command = strtok(NULL,"\r\n");
 	}
 
-	for(int k=0; k<threadCount; k++)
-	{
-		char* token = NULL;
-		//int j = 0;
-		token =  strtok(lines[k],";");
-		while(token!=NULL)
-		{
-			strncpy((*threads + k) -> tid, token, 3); //copy thread id
+    int **max = malloc(sizeof(int *) * customer);
 
-			token = strtok(NULL, ";");
+    for (int k = 0; k < customer; k++){
 
-			if (token){
-				(*threads + k) -> start_time = strtol(token, NULL, 10);
-			}
+        int *temp = malloc(sizeof(int) * resource);
+        char *token = NULL;
 
-			if (token){
-				(*threads + k) -> lifetime = strtol(token, NULL, 10);
-			}
+        int j = 0;
+        
+        token = strtok(lines[k], ",");
+        while (token!=NULL){
+            temp[j] = atoi(token);
+            j++;
+            token = strtok(NULL, ",");
+        }
 
-			(*threads + k) -> executed = 0;
+        max[k] = temp;
 
-//this loop tokenizes each line of input file
-//write your code here to populate instances of Thread to build a collection
-		}
-	}
-	return threadCount;
+    }
+
+    return max;
+
+    
+
+// 	for(int k=0; k<threadCount; k++)
+// 	{
+// 		char* token = NULL;
+// 		//int j = 0;
+// 		token =  strtok(lines[k],";");
+// 		while(token!=NULL)
+// 		{
+// 			strncpy((*threads + k) -> tid, token, 3); //copy thread id
+
+// 			token = strtok(NULL, ";");
+
+// 			if (token){
+// 				(*threads + k) -> start_time = strtol(token, NULL, 10);
+// 			}
+
+// 			if (token){
+// 				(*threads + k) -> lifetime = strtol(token, NULL, 10);
+// 			}
+
+// 			(*threads + k) -> executed = 0;
+
+// //this loop tokenizes each line of input file
+// //write your code here to populate instances of Thread to build a collection
+// 		}
+// 	}
+// 	return threadCount;
 }
