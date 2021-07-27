@@ -43,8 +43,8 @@ int **needs; // point to resources still needed
     
 // } Customer;
 
-// from a2 q3, repurpose
-int readFile(char* fileName, Thread** threads)//use this method in a suitable way to read file
+// from a2 q3, repurposed
+int **readFile(char* fileName)//use this method in a suitable way to read file
 {
 	FILE *in = fopen(fileName, "r");
 	if(!in)
