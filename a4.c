@@ -68,21 +68,21 @@ int **readFile(char* fileName)//use this method in a suitable way to read file
 	fclose(in);
 
 	char* command = NULL;
-	int threadCount = 0;
+	//int threadCount = 0;
 	char* fileCopy = (char*)malloc((strlen(fileContent)+1)*sizeof(char));
 	strcpy(fileCopy,fileContent);
 	command = strtok(fileCopy,"\r\n");
 	while(command!=NULL)
 	{
-		threadCount++;
+		customer++;
 		command = strtok(NULL,"\r\n");
 	}
-	*threads = (Thread*) malloc(sizeof(Thread)*threadCount);
-
-	char* lines[threadCount];
-	command = NULL;
+	//*threads = (Thread*) malloc(sizeof(Thread)*threadCount);
+    strcpy(fileCopy, fileContent);
+	char* lines[customer];
+	//command = NULL;
 	int i=0;
-	command = strtok(fileContent,"\r\n");
+	command = strtok(fileCopy,"\r\n");
 	while(command!=NULL)
 	{
 		lines[i] = malloc(sizeof(command)*sizeof(char));
