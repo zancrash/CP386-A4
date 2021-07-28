@@ -4,7 +4,7 @@
  Project: A04
  file description
  -------------------------------------
- Author:  Muhammad Ali
+ Authors:  Muhammad Ali
  ID:      191651560
  Email:   alix1560@mylaurier.ca
  Version  2021-07-17
@@ -142,3 +142,14 @@ int **readFile(char* fileName)//use this method in a suitable way to read file
 // 	}
 // 	return threadCount;
 }
+
+
+int main(int argc, char *argv[]){
+
+}
+
+// safety function will be used to run the safety algorithm
+int *safety(){
+
+}
+
