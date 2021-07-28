@@ -29,8 +29,8 @@
 // int available[4] = {}; // array to store available resources.
 // int needs[4] = {}; // array to store how many more resources are needed.
 
-int customer;
-int resource_type;
+int customerCount;
+int resourceCurrent;
 int safe;
 
 int **allocated; // point to allocated resources
@@ -38,12 +38,14 @@ int **max; // point to max resources
 int *available; // point to available resources
 int **needs; // point to resources still needed
 
-// typedef struct customer{
-//     int customerID;
+// typedef struct customerCount{
+//     int customerCountID;
     
-// } Customer;
+// } customerCount;
 
-// from a2 q3, repurposed
+int **readFile(char* fileName);
+
+// from a2 q3, repurposed. Function will read/parse file and assign values to the max array
 int **readFile(char* fileName)//use this method in a suitable way to read file
 {
 	FILE *in = fopen(fileName, "r");
@@ -74,12 +76,12 @@ int **readFile(char* fileName)//use this method in a suitable way to read file
 	command = strtok(fileCopy,"\r\n");
 	while(command!=NULL)
 	{
-		customer++;
+		customerCount++;
 		command = strtok(NULL,"\r\n");
 	}
 	//*threads = (Thread*) malloc(sizeof(Thread)*threadCount);
     strcpy(fileCopy, fileContent);
-	char* lines[customer];
+	char* lines[customerCount];
 	//command = NULL;
 	int i=0;
 	command = strtok(fileCopy,"\r\n");
@@ -91,11 +93,11 @@ int **readFile(char* fileName)//use this method in a suitable way to read file
 		command = strtok(NULL,"\r\n");
 	}
 
-    int **max = malloc(sizeof(int *) * customer);
+    int **max = malloc(sizeof(int *) * customerCount);
 
-    for (int k = 0; k < customer; k++){
+    for (int k = 0; k < customerCount; k++){
 
-        int *temp = malloc(sizeof(int) * resource);
+        int *temp = malloc(sizeof(int) * resourceCurrent);
         char *token = NULL;
 
         int j = 0;
@@ -146,10 +148,71 @@ int **readFile(char* fileName)//use this method in a suitable way to read file
 
 int main(int argc, char *argv[]){
 
+	if (argc<2){
+		printf("Not enough parameters. Please try again.\n");
+		return -1;
+	}
+
+	resourceCurrent = argc - 1;
+
+	// initialize allocated resources array
+	allocated = malloc(sizeof(int *) * customerCount);
+
+	// populate maximum resources array
+	max = readFile(FILE_IN);
+
+	// populate available resources arr
+	available = malloc(sizeof(int) + resourceCurrent);
+
+	for (int i = 0; i < argc; i++){
+		available[i-1] = atoi(argv[i]);
+	}
+
+	// initialize needed resources
+	needs = malloc(sizeof(int *) * customerCount);
+	for (int j = 0; j < customerCount; j++){
+		allocated[j] = malloc(sizeof(int) * resourceCurrent);
+		need[j] = malloc(sizeof(int) * resourceCurrent);
+	}
+
+
+	// set safe state
+	safe = 0;
+
+	char *input = malloc(sizeof(char) * MAX_INPUT_SIZE);
+
+	// print customerCount and allocated/max resources
+	printf("Number of customers: %d\n", customerCount);
+	printf("Currently Available resources: ");
+	getSinglePointer(available, resourceCurrent);
+	printf("Maximum resources from file: ");
+	getDoublePointer(max, customerCount, resourceCurrent);
+
 }
 
 // safety function will be used to run the safety algorithm
-int *safety(){
+int safetyCheck(){
 
 }
 
+void getSinglePointer(int *info, int j){
+	for (int i = 0; i < j; i++){
+		printf("%d", info[i]);
+		if(i < j-1){
+			printf(" ");
+		}
+	}
+	printf("\n");
+}
+
+void getDoublePointer(int *info, int j, int k){
+	for (int i = 0; i < j; i++){
+		for (int y = 0; y < k; y++){
+			printf("%d", info[i][y]);
+			if(y < k-1){
+				printf(" ");
+			}
+		}
+		printf("\n");	
+	}
+}
