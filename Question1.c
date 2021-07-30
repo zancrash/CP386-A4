@@ -47,6 +47,9 @@ int **needs; // point to resources still needed
 int resourcesCount; // Number of resources given
 int customerCount; //Count of customers
 Customer* customers = NULL; //Stores array of clients as given in input text
+int safeResources[MAX_INPUT_SIZE];
+int completed[MAX_INPUT_SIZE];
+int pending[MAX_INPUT_SIZE];
 
 // Function declarations
 int **readFile(char* fileName);
@@ -168,32 +171,27 @@ int main(int argc, char *argv[]){
 
 /**
  * ================================================================
- * getCustCount - Count number of "\n" occurances in the given file
+ * countCustomers - Counts the number of customers based on the numbers of lines in file.
  * ================================================================
  **/
-int getCustCount(char *filename) {
-	
+int countCustomers(char *filename) {
 	// Variable Declarations
-	FILE *fileptr;
-    int count_lines = 0;
-    char c;
+	FILE *file;
+    int customerCount = 0;
+    char item;
  
-    fileptr = fopen(filename, "r"); // Open File
-
-    c = getc(fileptr); // Extract Character from File and store in variable 'c'
+    file = fopen(filename, "r"); // Open file related to filename
+    item = getc(file); // Get first character
     
-	while (c != EOF)
-    {
-		// Increment Count Lines when "\n" is present
-        if (c == '\n')
-            count_lines++;
-
-        c = getc(fileptr);
+	while (item != EOF) { 	// Count lines in files
+        if (item == '\n')
+            customerCount++;
+        item = getc(file);
     }
 
-    fclose(fileptr); // Close file
+    fclose(file); // Close file
 
-    return count_lines;
+    return customerCount;
 }
 
 
@@ -231,7 +229,7 @@ int *safety(int resourceCount){
 					if (needs[i][j] > pending[j]) {
 						break;
 					} else {
-						columnCount++;
+						columnIndex++;
 					}
 					if(columnIndex == resourceCount){
 						safeResources[safeResourceNum] = i;
