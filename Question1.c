@@ -24,6 +24,12 @@
 #define FILE_IN "sample4_in.txt"
 #define MAX_INPUT_SIZE 256
 
+typedef struct customer{ // Representation of a customer
+    int customerID;
+	pthread_t 
+	
+} Customer;
+
 // int allocated[4] = {}; // array to store allocated resources.
 // int max[4] = {}; // array to store maximum required resources.
 // int available[4] = {}; // array to store available resources.
@@ -38,13 +44,16 @@ int **max; // point to max resources
 int *available; // point to available resources
 int **needs; // point to resources still needed
 
-// typedef struct customer{
-//     int customerID;
-    
-// } Customer;
+int resourcesCount; // Number of resources given
+int customerCount; //Count of customers
+Customer* customers = NULL; //Stores array of clients as given in input text
+
+// Declarations
+int **readFile(char* fileName);
+int *safety();
 
 // from a2 q3, repurposed
-int **readFile(char* fileName)//use this method in a suitable way to read file
+int **readFile(char* fileName) //use this method in a suitable way to read file
 {
 	FILE *in = fopen(fileName, "r");
 	if(!in)
@@ -145,11 +154,73 @@ int **readFile(char* fileName)//use this method in a suitable way to read file
 
 
 int main(int argc, char *argv[]){
+	if(argc<2)
+	{
+		printf("INPUT ERROR:'Available' resources Data Missing... Error Code -1\n");
+		return -1;
+	}
 
+	resourcesCount = argc - 1;
+	
 }
 
 // safety function will be used to run the safety algorithm
-int *safety(){
+int *safety(int resourceCount){
+	int safe = 0, isLocated = 1, safeResourceNum = 0, columnIndex = 0;
 
+	// Array initiations
+	safeResources = (int*) malloc(customerCount * sizeof(int));
+	pending = (int*) malloc(resourceCount * sizeof(int));
+	completed = (int*) malloc(customerCount * sizeof(int));
+
+	for (int i = 0; i < customerCount; i++) {
+		safeResources[i] = -1;
+		completed[i] = 0;
+	}
+
+	for (int i = 0; i < resourceCount; i++) {
+		pending[i] = Available[i];
+	}
+
+	while(isLocated == 1 && safe == 0){
+		isLocated = 0;
+		for (int i = 0; i < customerCount; i++){
+			if (completed[i] == 0){
+				columnIndex = 0;
+				int j = 0;
+				while (j < resourceCount){
+					if (needs[i][j] == -1 || pending[j] == -1){
+						safe = -1;
+						break;
+					}
+
+					if (needs[i][j] > pending[j]) {
+						break;
+					} else {
+						columnCount++;
+					}
+					if(columnIndex == resourceCount){
+						safeResources[safeResourceNum] = i;
+						safeResourceNum += 1;
+						completed[i] = 1;
+						isLocated = 1;
+
+						for (int k = 0; k < resourceCount; k++){
+							pending[k] += allocated[i][k];
+						}
+					}
+					j++;
+				}
+			}
+		}
+	}
+
+
+	for (int i = 0; i < customerCount; i++) {
+		if (completed[i] == 0) {
+			safe = -1;
+		}
+	}
+
+	return safe;
 }
-
