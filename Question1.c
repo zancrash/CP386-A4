@@ -48,9 +48,11 @@ int resourcesCount; // Number of resources given
 int customerCount; //Count of customers
 Customer* customers = NULL; //Stores array of clients as given in input text
 
-// Declarations
+// Function declarations
 int **readFile(char* fileName);
-int *safety();
+int *safety(int resourceCount);
+int countCustomers(char* file);
+
 
 // from a2 q3, repurposed
 int **readFile(char* fileName) //use this method in a suitable way to read file
@@ -154,15 +156,47 @@ int **readFile(char* fileName) //use this method in a suitable way to read file
 
 
 int main(int argc, char *argv[]){
-	if(argc<2)
+	if(argc < 2)
 	{
 		printf("INPUT ERROR:'Available' resources Data Missing... Error Code -1\n");
 		return -1;
 	}
 
-	resourcesCount = argc - 1;
+	int resourcesCount = argc - 1;
 	
 }
+
+/**
+ * ================================================================
+ * getCustCount - Count number of "\n" occurances in the given file
+ * ================================================================
+ **/
+int getCustCount(char *filename) {
+	
+	// Variable Declarations
+	FILE *fileptr;
+    int count_lines = 0;
+    char c;
+ 
+    fileptr = fopen(filename, "r"); // Open File
+
+    c = getc(fileptr); // Extract Character from File and store in variable 'c'
+    
+	while (c != EOF)
+    {
+		// Increment Count Lines when "\n" is present
+        if (c == '\n')
+            count_lines++;
+
+        c = getc(fileptr);
+    }
+
+    fclose(fileptr); // Close file
+
+    return count_lines;
+}
+
+
 
 // safety function will be used to run the safety algorithm
 int *safety(int resourceCount){
