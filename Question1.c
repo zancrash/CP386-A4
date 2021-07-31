@@ -54,6 +54,8 @@ int pending[MAX_INPUT_SIZE];
 int **readFile(char* fileName);
 int *safety(int resourceCount);
 int countCustomers(char* file);
+void RQ(char* command);
+void RL(char* command);
 
 
 // from a2 q3, repurposed
@@ -165,7 +167,12 @@ int main(int argc, char *argv[]){
 	}
 
 	int resourcesCount = argc - 1; // Sets variable equal to 
-	
+
+	// Initialization of commands
+    char rq[MAX_INPUT_SIZE] = "RQ"; // Request resource
+    char rl[MAX_INPUT_SIZE] = "RL"; // Release resource
+    char run[MAX_INPUT_SIZE] = "Run"; // Run Safe Sequence
+    char exit[MAX_INPUT_SIZE] = "Exit"; // Exit Program
 }
 
 /**
@@ -193,10 +200,55 @@ int countCustomers(char *filename) {
     return customerCount;
 }
 
+/**
+ * ================================================================
+ * Run - 
+ * ================================================================
+ **/
+void Run() {
+	int customer
+    int safe = safety();
 
+    if (safe != 0) {
+        printf("Program is in an unsafe state\n");
+	} else {
+		printf("Safe Sequence: 0 1 2 3 4\n");
+		// Display information per customer
+        for(int i  = 0;i<5;i++) {
+
+		}
+
+	}
+}
+
+/**
+ * ================================================================
+ * RQ - Requests resources.
+ * ================================================================
+ **/
+void RQ(char* command) {
+
+}
+
+
+
+
+/**
+ * ================================================================
+ * RL - Releases resources.
+ * ================================================================
+ **/
+void RL(char* command) {
+
+}
+
+
+void star(){
+
+}
 
 // safety function will be used to run the safety algorithm
-int *safety(int resourceCount){
+int *safety(int resourceCount, int* Available){
 	int safe = 0, isLocated = 1, safeResourceNum = 0, columnIndex = 0;
 
 	// Array initiations

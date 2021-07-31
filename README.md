@@ -10,8 +10,8 @@ Link to clone: https://github.com/zancrash/CP386-A4.git
 ## Screenshots
 
 ## Individual Contribution (Function-wise)
-Nicolas: *safety(), 
-Farzan: **realFile(char* fileName)
+Nicolas: *safety(), run();
+Farzan: **realFile(char* fileName);
 
 ### view contribution list
 
@@ -19,6 +19,10 @@ Farzan: **realFile(char* fileName)
 int **readFile(char* fileName);
 int *safety(int resourceCount);
 int countCustomers(char* file);
+void run();
+void rq();
+Request resources (RQ)
+Release resources (RL)
 
 ## Tests
 
