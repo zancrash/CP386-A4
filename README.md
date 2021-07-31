@@ -1,16 +1,24 @@
 # CP386-A4
 
 ## Motivation
+To demostrate knowledge of banker's algorithm by implementing it in a C program.
 
 ## Installation
+To run the banker's algorithm program, the repository must be cloned and its destination must be accessed from cmd to run.
+Link to clone: https://github.com/zancrash/CP386-A4.git
 
 ## Screenshots
 
 ## Individual Contribution (Function-wise)
+Nicolas: *safety(), 
+Farzan: **realFile(char* fileName)
 
 ### view contribution list
 
 ## Features
+int **readFile(char* fileName);
+int *safety(int resourceCount);
+int countCustomers(char* file);
 
 ## Tests
 

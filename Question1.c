@@ -24,10 +24,9 @@
 #define FILE_IN "sample4_in.txt"
 #define MAX_INPUT_SIZE 256
 
-typedef struct customer{ // Representation of a customer
+typedef struct customer { // Representation of a customer
     int customerID;
 	pthread_t 
-	
 } Customer;
 
 // int allocated[4] = {}; // array to store allocated resources.
@@ -39,10 +38,10 @@ int customer;
 int resource_type;
 int safe;
 
-int **allocated; // point to allocated resources
-int **max; // point to max resources
-int *available; // point to available resources
-int **needs; // point to resources still needed
+int **allocated = NULL; // point to allocated resources
+int **max = NULL; // point to max resources
+int *available = NULL; // point to available resources
+int **needs = NULL; // point to resources still needed
 
 int resourcesCount; // Number of resources given
 int customerCount; //Count of customers
@@ -109,7 +108,7 @@ int **readFile(char* fileName) //use this method in a suitable way to read file
 
     for (int k = 0; k < customer; k++){
 
-        int *temp = malloc(sizeof(int) * resource);
+        int *temp = malloc(sizeof(int) * customer);
         char *token = NULL;
 
         int j = 0;
@@ -165,7 +164,7 @@ int main(int argc, char *argv[]){
 		return -1;
 	}
 
-	int resourcesCount = argc - 1;
+	int resourcesCount = argc - 1; // Sets variable equal to 
 	
 }
 
@@ -201,9 +200,9 @@ int *safety(int resourceCount){
 	int safe = 0, isLocated = 1, safeResourceNum = 0, columnIndex = 0;
 
 	// Array initiations
-	safeResources = (int*) malloc(customerCount * sizeof(int));
-	pending = (int*) malloc(resourceCount * sizeof(int));
-	completed = (int*) malloc(customerCount * sizeof(int));
+	*safeResources = (int *) malloc(customerCount * sizeof(int));
+	*pending = (int *) malloc(resourceCount * sizeof(int));
+	*completed = (int *) malloc(customerCount * sizeof(int));
 
 	for (int i = 0; i < customerCount; i++) {
 		safeResources[i] = -1;
