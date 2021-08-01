@@ -10,11 +10,7 @@ Link to clone: https://github.com/zancrash/CP386-A4.git
 ## Screenshots
 
 ## Individual Contribution (Function-wise)
-Nicolas: safety(), run(); void request(),
-release(),
-star(),run(),
-exit();
-
+Nicolas: safety(), main()
 Farzan: main(), realFile(), runThread(), getSinglePointer(), getDoublePointer();
 
 ### view contribution list

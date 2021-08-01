@@ -40,11 +40,11 @@ int **needs;
 // Function declarations
 int **readFile(char* filename);
 void *runThread(void *t);
-int *safetyCheck();
+int *safetyCheck(int customerCount);
 void getSinglePointer(int *info, int j);
 void getDoublePointer(int **info, int j, int k);
-void request(int resourceCurrent, int customerCount, int **need, int **allocated, int **max, int safe, char *inputString);
-void release(int resourceCurrent, int customerCount, int **need, int **allocated, int **max, int safe);
+void request(int resourceCurrent, int customerCount, int **needs, int **allocated, int **max, int safe, char *inputString);
+void release(int resourceCurrent, int customerCount, int **needs, int **allocated, int **max, int safe, char *inputString);
 void star(int resourceCurrent, int customerCount, int *available, int **needs, int **allocated, int **max);
 void run(int safe, int customerCount);
 void exit(int *available, int **max, int **allocated, int **needs, int *safetySequence);
@@ -149,7 +149,7 @@ int main(int argc, char *argv[]) {
 		}
 
 		else if (strstr(inputString, "RL")) {
-			release(resourceCurrent, customerCount, **needs, **allocated, **max, *inputString);
+			release(resourceCurrent, customerCount, **needs, **allocated, **max, safe, *inputString);
 		}
 
 		else if (strstr(inputString, "*")) {
@@ -159,7 +159,7 @@ int main(int argc, char *argv[]) {
 			run(safe, customerCount);
 		}
 		else if (strstr(inputString, "exit")) {
-			exit(*available,  **max, **allocated, **needs, *safetySequence);
+			exit(*available, **max, **allocated, **needs, *safetySequence);
 		}
 		else {
 			printf("\"%s\" is not a valid input, enter one of [\"RQ\",\"RL\",\"*\",\"Run\",\"exit\"].\n", inputString);
@@ -242,7 +242,7 @@ void getDoublePointer(int **info, int j, int k) {
 }
 
 // Request resources
-void request(int resourceCurrent, int customerCount, int **need, int **allocated, int **max, int safe, char *inputString) {
+void request(int resourceCurrent, int customerCount, int **needs, int **allocated, int **max, int safe, char *inputString) {
 	int *arr = malloc(sizeof(int) * (resourceCurrent + 1)); // input array
 	
 	char *token = NULL;
@@ -262,11 +262,11 @@ void request(int resourceCurrent, int customerCount, int **need, int **allocated
 	if (customerAllocated < customerCount && i == resourceCurrent + 2) {
 		for (int j = 0; j < resourceCurrent; j++) {
 			allocated[customerAllocated][j] = arr[j + 1];
-			need[customerAllocated][j] = max[customerAllocated][j] - allocated[customerAllocated][j];
+			needs[customerAllocated][j] = max[customerAllocated][j] - allocated[customerAllocated][j];
 			// need has to be positive
-			if (need[customerAllocated][j] < 0)
+			if (needs[customerAllocated][j] < 0)
 			{
-				need[customerAllocated][j] = 0;
+				needs[customerAllocated][j] = 0;
 			}
 		}
 	}
@@ -279,7 +279,7 @@ void request(int resourceCurrent, int customerCount, int **need, int **allocated
 		}
 	}
 	free(arr);
-	safetySequence = safetyCheck();
+	safetySequence = safetyCheck(customerCount);
 	printf("Request is satisfied\n");
 
 	if (safetySequence[0] == -1) {
@@ -294,7 +294,7 @@ void request(int resourceCurrent, int customerCount, int **need, int **allocated
 }
 
 // Releases resources
-void release(int resourceCurrent, int customerCount, int **need, int **allocated, int **max, int safe, char *inputString) {
+void release(int resourceCurrent, int customerCount, int **needs, int **allocated, int **max, int safe, char *inputString) {
 	int *arr = malloc(sizeof(int) * (resourceCurrent + 1));
 	
 	char *token = NULL;
@@ -315,7 +315,7 @@ void release(int resourceCurrent, int customerCount, int **need, int **allocated
 		for (int j = 0; j < resourceCurrent; j++) {
 			if (arr[j + 1] <= allocated[customerAllocated][j]) {
 				allocated[customerAllocated][j] -= arr[j + 1];
-				need[customerAllocated][j] = max[customerAllocated][j] - allocated[customerAllocated][j];
+				needs[customerAllocated][j] = max[customerAllocated][j] - allocated[customerAllocated][j];
 			}
 			else {
 				printf("cannot release more resources than allocated.\n");
@@ -333,7 +333,7 @@ void release(int resourceCurrent, int customerCount, int **need, int **allocated
 		}
 	}
 	free(arr);
-	safetySequence = safetyCheck();
+	safetySequence = safetyCheck(customerCount);
 	printf("Request satisfied\n");
 
 	if (safetySequence[0] == -1) {
@@ -348,7 +348,7 @@ void release(int resourceCurrent, int customerCount, int **need, int **allocated
 }
 
 void run(int safe, int customerCount) {
-	safetySequence = safetyCheck();
+	safetySequence = safetyCheck(customerCount);
 	if (safe == 1) {
 		for (int i = 0; i < customerCount; i++) {
 			int runThread = safetySequence[i];
@@ -385,7 +385,6 @@ void exit(int *available, int **max, int **allocated, int **needs, int *safetySe
 	free(allocated);
 	free(needs);
 	free(safetySequence);
-
 	return 0;
 }
 
