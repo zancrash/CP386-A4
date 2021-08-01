@@ -10,19 +10,26 @@ Link to clone: https://github.com/zancrash/CP386-A4.git
 ## Screenshots
 
 ## Individual Contribution (Function-wise)
-Nicolas: *safety(), run();
-Farzan: **realFile(char* fileName);
+Nicolas: safety(), run(); void request(),
+release(),
+star(),run(),
+exit();
+
+Farzan: main(), realFile(), runThread(), getSinglePointer(), getDoublePointer();
 
 ### view contribution list
 
 ## Features
-int **readFile(char* fileName);
-int *safety(int resourceCount);
-int countCustomers(char* file);
-void run();
-void rq();
-Request resources (RQ)
-Release resources (RL)
+int **readFile(char* filename);
+void *runThread(void *t);
+int *safetyCheck();
+void getSinglePointer(int *info, int j);
+void getDoublePointer(int **info, int j, int k);
+void request(int resourceCurrent, int customerCount, int **need, int **allocated, int **max, int safe, char *inputString);
+void release(int resourceCurrent, int customerCount, int **need, int **allocated, int **max, int safe);
+void star(int resourceCurrent, int customerCount, int *available, int **needs, int **allocated, int **max);
+void run(int safe, int customerCount);
+void exit(int *available, int **max, int **allocated, int **needs, int *safetySequence);
 
 ## Tests
 
