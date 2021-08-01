@@ -1,6 +1,6 @@
 #Do not edit the contents of this file.
 CC = gcc
-CFLAGS = -Wall -g -std=gnu99
+CFLAGS = -Wall -g -std=gnu99 -w
 LDFLAGS = -lrt -lpthread
 TARGET = Question1  
 OBJFILES = Question1.o
