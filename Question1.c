@@ -3,10 +3,13 @@
 Project: Assignment 4
 File: Question1.c
 ------------------------------
-Author: Farzan
-		Nicolas Lozano
-IDs:	
+Authors: Muhammad Ali
+		 Nicolas Lozano
+
+IDs:	191651560
 		150701040
+
+Github: https://github.com/zancrash/CP386-A4
 ------------------------------
 */
 
@@ -22,32 +25,23 @@ IDs:
 #define FILE_IN "sample4_in.txt"
 #define MAX_INPUT_SIZE 256 
 
-// int allocated[4] = {}; // array to store allocated resources.
-// int max[4] = {}; // array to store maximum required resources.
-// int available[4] = {}; // array to store available resources.
-// int needs;
-
 int customerCount;
 int resourceCurrent;
 int safe;
 int *safetySequence;
 
-int *available;
-int **max;
-int **allocated;
-int **needs;
+int **allocated; // point to allocated resources
+int **max; // point to max resources
+int *available; // point to available resources
+int **needs; // point to resources still needed
 
 // Function declarations
 int **readFile(char* filename);
 void *runThread(void *t);
-int *safetyCheck(int customerCount);
+int *safetyCheck();
 void getSinglePointer(int *info, int j);
 void getDoublePointer(int **info, int j, int k);
-void request(int resourceCurrent, int customerCount, int **needs, int **allocated, int **max, int safe, char *inputString);
-void release(int resourceCurrent, int customerCount, int **needs, int **allocated, int **max, int safe, char *inputString);
-void star(int resourceCurrent, int customerCount, int *available, int **needs, int **allocated, int **max);
 void run(int safe, int customerCount);
-void exit(int *available, int **max, int **allocated, int **needs, int *safetySequence);
 
 // from a2 q3, repurposed. Function will read/parse file and assign values to the max array
 int **readFile(char *filename) { //use this method in a suitable way to read file
@@ -135,9 +129,9 @@ int main(int argc, char *argv[]) {
 	printf("Maximum Resources from file:\n");
 	getDoublePointer(max, customerCount, resourceCurrent);
 
-	// will run till users input is exit
+	// While there is a user input...
 	while (1) {
-		printf("Enter command (RQ, RL, *, run, exit): ");
+		printf("Enter command: ");
 		fgets(inputString, MAX_INPUT_SIZE, stdin);
 
 		if (strlen(inputString) > 0 && inputString[strlen(inputString) - 1] == '\n') {
@@ -145,24 +139,123 @@ int main(int argc, char *argv[]) {
 		}
 
 		if (strstr(inputString, "RQ")) {
-			request(resourceCurrent, customerCount, **needs, **allocated, **max, safe, *inputString);
+
+			int c = 0;
+			int *arr = malloc(sizeof(int) * (resourceCurrent+1)); // array for user input
+			char *token = NULL;
+			token = strtok(inputString, " ");
+
+			while(token != NULL){
+				if (c>0){
+					arr[c-1] = atoi(token);
+				}
+				token = strtok(NULL, " ");
+				c++;
+			}
+
+			// allocated array input
+			int custAllocated = arr[0];
+			if(custAllocated < customerCount && c == resourceCurrent + 2){
+				for(int i = 0; i < resourceCurrent; i++){
+					allocated[custAllocated][i] = arr[i+1];
+					needs[custAllocated][i] = max[custAllocated][i] - allocated[custAllocated][i];
+
+					// ensure the needs array is not negative
+					if(needs[custAllocated][i] < 0){
+						needs[custAllocated][i] = 0;
+					}
+				}
+			} else{
+				if(custAllocated >= customerCount){
+					printf("Thread is invalid. Please try again.\n");
+				} else{
+					printf("Not enough parameters. Please try again.\n");
+				}
+			}
+			free(arr);
+			safetySequence = safetyCheck(); // RUN SAFETY CHECK
+			
+
+			if (safetySequence[0] == -1){
+				safe = 0;
+				printf("State is safe, and request is satisfied.\n");
+			} else{
+				safe = 1;
+				printf("State is not safe.\n");
+			}
+
+		} else if (strstr(inputString, "RL")){
+						int c = 0;
+			int *arr = malloc(sizeof(int) * (resourceCurrent+1)); // array for user input
+			char *token = NULL;
+			token = strtok(inputString, " ");
+
+			while(token != NULL){
+				if (c > 0){
+					arr[c-1] = atoi(token);
+				}
+				token = strtok(NULL, " ");
+				c++;
+			}
+
+			int custAllocated = arr[0];
+
+			// clear the allocated resources array
+			if (custAllocated < customerCount && c == resourceCurrent + 2){
+				for(int i = 0; i < resourceCurrent; i++){
+					if(arr[i+1] <= allocated[custAllocated][i]){
+						allocated[custAllocated][i] -= arr[i+1];
+						needs[custAllocated][i] = max[custAllocated][i] - allocated[custAllocated][i];
+					} else {
+						printf("No more resources left to release.");
+						break;
+					}
+				}
+			} else {
+				if (custAllocated >= customerCount){
+					printf("Error: threads are invalid.\n");
+				} else {
+					printf("Not enough parameters. Please try again.\n");
+				}
+			}
+			free(arr); // release memory space used for array
+			safetySequence = safetyCheck(); // perform safety check
+
+			if (safetySequence[0] == -1){
+				safe = 0;
+				printf("State is safe, and request is not satisfied.\n");
+			} else{
+				safe = 1;
+				printf("State is safe, and request is satisfied.\n");
+			}
 		}
 
-		else if (strstr(inputString, "RL")) {
-			release(resourceCurrent, customerCount, **needs, **allocated, **max, safe, *inputString);
-		}
 
-		else if (strstr(inputString, "*")) {
-			star(resourceCurrent, customerCount, *available, **needs, **allocated, **max);
+		else if (strstr(inputString, "Status")) {
+			printf("Allocated Resource: \n");
+			getDoublePointer(allocated, customerCount, resourceCurrent);
+
+			printf("Needed: \n");
+			getDoublePointer(needs, customerCount, resourceCurrent);
+
+			printf("Available \n");
+			getSinglePointer(available, resourceCurrent);
+
+			printf("Maximum resources: \n");
+			getDoublePointer(max, customerCount, resourceCurrent);
 		}
 		else if (strstr(inputString, "Run")) {
 			run(safe, customerCount);
 		}
 		else if (strstr(inputString, "exit")) {
-			exit(*available, **max, **allocated, **needs, *safetySequence);
+			free(available);
+			free(max);
+			free(allocated);
+			free(needs);
+			free(safetySequence);
 		}
 		else {
-			printf("\"%s\" is not a valid input, enter one of [\"RQ\",\"RL\",\"*\",\"Run\",\"exit\"].\n", inputString);
+			printf("\"%s\" is an invalid input. List of commands: \"RQ\",\"RL\",\"Status\",\"Run\",\"exit\".\n", inputString);
 		}
 	}
 	return 0;
@@ -242,7 +335,7 @@ void getDoublePointer(int **info, int j, int k) {
 }
 
 // Request resources
-void request(int resourceCurrent, int customerCount, int **needs, int **allocated, int **max, int safe, char *inputString) {
+void request(int resourceCurrent, int customerCount, int **need, int **allocated, int **max, int safe, char *inputString) {
 	int *arr = malloc(sizeof(int) * (resourceCurrent + 1)); // input array
 	
 	char *token = NULL;
@@ -262,93 +355,36 @@ void request(int resourceCurrent, int customerCount, int **needs, int **allocate
 	if (customerAllocated < customerCount && i == resourceCurrent + 2) {
 		for (int j = 0; j < resourceCurrent; j++) {
 			allocated[customerAllocated][j] = arr[j + 1];
-			needs[customerAllocated][j] = max[customerAllocated][j] - allocated[customerAllocated][j];
+			need[customerAllocated][j] = max[customerAllocated][j] - allocated[customerAllocated][j];
 			// need has to be positive
-			if (needs[customerAllocated][j] < 0)
+			if (need[customerAllocated][j] < 0)
 			{
-				needs[customerAllocated][j] = 0;
+				need[customerAllocated][j] = 0;
 			}
 		}
 	}
 	else {
 		if (customerAllocated >= customerCount) {
-			printf("Thread invalid, try again.\n");
+			printf("Thread is invalid. Please try again.\n");
 		}
 		else {
-			printf("Needs more paramenters, try again.\n");
+			printf("Not enough parameters. Please try again.\n");
 		}
 	}
 	free(arr);
-	safetySequence = safetyCheck(customerCount);
-	printf("Request is satisfied\n");
-
-	if (safetySequence[0] == -1) {
-		safe = 0;
-		printf("** unsafe state - fix before running.\n");
-	}
-	else {
-		safe = 1;
-		printf("** state is safe now\n");
-	}
-	return;
-}
-
-// Releases resources
-void release(int resourceCurrent, int customerCount, int **needs, int **allocated, int **max, int safe, char *inputString) {
-	int *arr = malloc(sizeof(int) * (resourceCurrent + 1));
-	
-	char *token = NULL;
-	token = strtok(inputString, " ");
-	
-	int i = 0;
-	while (token != NULL) {
-		if (i > 0) {
-			arr[i - 1] = atoi(token);
-		}
-		token = strtok(NULL, " ");
-		i++;
-	}
-
-	int customerAllocated = arr[0];
-	// removing allocated array
-	if (customerAllocated < customerCount && i == resourceCurrent + 2) {
-		for (int j = 0; j < resourceCurrent; j++) {
-			if (arr[j + 1] <= allocated[customerAllocated][j]) {
-				allocated[customerAllocated][j] -= arr[j + 1];
-				needs[customerAllocated][j] = max[customerAllocated][j] - allocated[customerAllocated][j];
+	safetySequence = safetyCheck();
+	if (safetySequence[0] == -1){
+				safe = 0;
+				printf("State is safe, and request is not satisfied.\n");
+			} else{
+				safe = 1;
+				printf("State is safe, and request is satisfied.\n");
 			}
-			else {
-				printf("cannot release more resources than allocated.\n");
-				break;
-			}
-		}
-	}
-	else
-	{
-		if (customerAllocated >= customerCount) {
-			printf("Threads invalid, try again\n");
-		}
-		else {
-			printf("Needs more paramenters, try again.\n");
-		}
-	}
-	free(arr);
-	safetySequence = safetyCheck(customerCount);
-	printf("Request satisfied\n");
-
-	if (safetySequence[0] == -1) {
-		safe = 0;
-		printf("** unsafe state - fix before running.\n");
-	}
-	else {
-		safe = 1;
-		printf("** state is now safe.\n");
-	}
 	return;
 }
 
 void run(int safe, int customerCount) {
-	safetySequence = safetyCheck(customerCount);
+	safetySequence = safetyCheck();
 	if (safe == 1) {
 		for (int i = 0; i < customerCount; i++) {
 			int runThread = safetySequence[i];
@@ -360,38 +396,14 @@ void run(int safe, int customerCount) {
 		}
 	}
 	else {
-		printf("** unsafe state - fix before running.\n");
+		printf("State is not safe. \n");
 	}
 }
 
-void star(int resourceCurrent, int customerCount, int *available, int **needs, int **allocated, int **max) {
-	printf("Allocated Resources: \n");
-	getDoublePointer(allocated, customerCount, resourceCurrent);
-
-	printf("Needed: \n");
-	getDoublePointer(needs, customerCount, resourceCurrent);
-
-	printf("Available: \n");
-	getSinglePointer(available, resourceCurrent);
-
-	printf("Maximum Resources: \n");
-	getDoublePointer(max, customerCount, resourceCurrent);
-}
-
-// Exits program and frees memory
-void exit(int *available, int **max, int **allocated, int **needs, int *safetySequence) {
-	free(available);
-	free(max);
-	free(allocated);
-	free(needs);
-	free(safetySequence);
-	return 0;
-}
-
 // safety function will be used to run the safety algorithm
-int *safetyCheck(int customerCount) {
+int *safetyCheck() {
 
-	int *completed = malloc(sizeof(int) * customerCount);
+	int *finished = malloc(sizeof(int) * customerCount);
 	int *safetySequence = malloc(sizeof(int) * customerCount);
 	int *temp = malloc(sizeof(int) * resourceCurrent);
 
@@ -403,7 +415,7 @@ int *safetyCheck(int customerCount) {
 	while (j < customerCount) {
 		int safe = 0;
 		for (int i = 0; i < customerCount; i++) {
-			if (completed[i] == 0) {
+			if (finished[i] == 0) {
 				int safety = 1;
 				for (int j = 0; j < resourceCurrent; j++) {
 					if (temp[j] <= needs[i][j]) {
@@ -413,7 +425,7 @@ int *safetyCheck(int customerCount) {
 				}
 				if (safety == 1) {
 					safetySequence[j] = i;
-					completed[i] = 1;
+					finished[i] = 1;
 					safe = 1;
 					j++;
 
@@ -427,7 +439,7 @@ int *safetyCheck(int customerCount) {
 			for (int m = 0; m < customerCount; m++) {
 				safetySequence[m] = -1;
 			}
-			free(completed);
+			free(finished);
 			free(temp);
 
 			return safetySequence;
@@ -435,7 +447,7 @@ int *safetyCheck(int customerCount) {
 			//// break();
 		}
 	}
-	free(completed);
+	free(finished);
 	free(temp);
 
 	return safetySequence;
