@@ -23,7 +23,7 @@ Github: https://github.com/zancrash/CP386-A4
 #include <semaphore.h>
 
 #define FILE_IN "sample4_in.txt"
-#define MAX_INPUT_SIZE 256
+#define MAX_INPUT_SIZE 256 
 
 int customerCount;
 int resourceCurrent;
