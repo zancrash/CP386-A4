@@ -35,19 +35,19 @@ int *safetySequence;
 int *available;
 int **max;
 int **allocated;
-int **need;
+int **needs;
 
 // Function declarations
-int **readFile(char *filename);
+int **readFile(char* filename);
 void *runThread(void *t);
 int *safetyCheck();
 void getSinglePointer(int *info, int j);
 void getDoublePointer(int **info, int j, int k);
 void request(int resourceCurrent, int customerCount, int **need, int **allocated, int **max, int safe, char *inputString);
 void release(int resourceCurrent, int customerCount, int **need, int **allocated, int **max, int safe);
-void star();
-void run();
-void exit();
+void star(int resourceCurrent, int customerCount, int *available, int **needs, int **allocated, int **max);
+void run(int safe, int customerCount);
+void exit(int *available, int **max, int **allocated, int **needs, int *safetySequence);
 
 // from a2 q3, repurposed. Function will read/parse file and assign values to the max array
 int **readFile(char *filename) { //use this method in a suitable way to read file
@@ -120,10 +120,10 @@ int main(int argc, char *argv[]) {
 	// Memory allocation for arrays
 	max = readFile(FILE_IN);
 	allocated = malloc(sizeof(int *) * customerCount);
-	need = malloc(sizeof(int *) * customerCount);
+	needs = malloc(sizeof(int *) * customerCount);
 	for (int i = 0; i < customerCount; i++) {
 		allocated[i] = malloc(sizeof(int) * resourceCurrent);
-		need[i] = malloc(sizeof(int) * resourceCurrent);
+		needs[i] = malloc(sizeof(int) * resourceCurrent);
 	}
 
 	safe = 0;
@@ -145,22 +145,21 @@ int main(int argc, char *argv[]) {
 		}
 
 		if (strstr(inputString, "RQ")) {
-			request(resourceCurrent, customerCount, **need, **allocated, **max, *inputString);
+			request(resourceCurrent, customerCount, **needs, **allocated, **max, safe, *inputString);
 		}
 
 		else if (strstr(inputString, "RL")) {
-			release(resourceCurrent, customerCount, **need, **allocated, **max, *inputString);
+			release(resourceCurrent, customerCount, **needs, **allocated, **max, *inputString);
 		}
 
 		else if (strstr(inputString, "*")) {
-			star(resourceCurrent, customerCount, *available, **need, **allocated, **max);
+			star(resourceCurrent, customerCount, *available, **needs, **allocated, **max);
 		}
 		else if (strstr(inputString, "Run")) {
-			run(int s, int customerCount);
+			run(safe, customerCount);
 		}
-		else if (strstr(inputString, "exit"))
-		{
-			exit(int safetySequence, int *available, int **allocated, int **max, int **need);
+		else if (strstr(inputString, "exit")) {
+			exit(*available,  **max, **allocated, **needs, *safetySequence);
 		}
 		else {
 			printf("\"%s\" is not a valid input, enter one of [\"RQ\",\"RL\",\"*\",\"Run\",\"exit\"].\n", inputString);
@@ -243,7 +242,7 @@ void getDoublePointer(int **info, int j, int k) {
 }
 
 // Request resources
-void request(int resourceCurrent, int customerCount, int **need, int **allocated, int **max, int safe) {
+void request(int resourceCurrent, int customerCount, int **need, int **allocated, int **max, int safe, char *inputString) {
 	int *arr = malloc(sizeof(int) * (resourceCurrent + 1)); // input array
 	
 	char *token = NULL;
@@ -291,10 +290,11 @@ void request(int resourceCurrent, int customerCount, int **need, int **allocated
 		safe = 1;
 		printf("** state is safe now\n");
 	}
+	return;
 }
 
 // Releases resources
-void release(int resourceCurrent, int customerCount, int **need, int **allocated, int **max, int safe) {
+void release(int resourceCurrent, int customerCount, int **need, int **allocated, int **max, int safe, char *inputString) {
 	int *arr = malloc(sizeof(int) * (resourceCurrent + 1));
 	
 	char *token = NULL;
@@ -344,6 +344,7 @@ void release(int resourceCurrent, int customerCount, int **need, int **allocated
 		safe = 1;
 		printf("** state is now safe.\n");
 	}
+	return;
 }
 
 void run(int safe, int customerCount) {
@@ -354,7 +355,7 @@ void run(int safe, int customerCount) {
 			pthread_t tid;
 			pthread_attr_t attr;
 			pthread_attr_init(&attr);
-			pthread_create(&tid, &attr, threadRun, (void *)&runThread);
+			pthread_create(&tid, &attr, runThread, (void *)&runThread);
 			pthread_join(tid, NULL);
 		}
 	}
@@ -363,12 +364,12 @@ void run(int safe, int customerCount) {
 	}
 }
 
-void star(resourceCurrent, customerCount, **need, **allocated, **max) {
+void star(int resourceCurrent, int customerCount, int *available, int **needs, int **allocated, int **max) {
 	printf("Allocated Resources: \n");
 	getDoublePointer(allocated, customerCount, resourceCurrent);
 
 	printf("Needed: \n");
-	getDoublePointer(need, customerCount, resourceCurrent);
+	getDoublePointer(needs, customerCount, resourceCurrent);
 
 	printf("Available: \n");
 	getSinglePointer(available, resourceCurrent);
@@ -382,7 +383,7 @@ void exit(int *available, int **max, int **allocated, int **needs, int *safetySe
 	free(available);
 	free(max);
 	free(allocated);
-	free(need);
+	free(needs);
 	free(safetySequence);
 
 	return 0;
@@ -406,7 +407,7 @@ int *safetyCheck(int customerCount) {
 			if (completed[i] == 0) {
 				int safety = 1;
 				for (int j = 0; j < resourceCurrent; j++) {
-					if (temp[j] <= need[i][j]) {
+					if (temp[j] <= needs[i][j]) {
 						safety = 0;
 						break;
 					}
