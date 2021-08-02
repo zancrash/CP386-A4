@@ -22,10 +22,11 @@ To execute the compiled program, run the file name, followed by the number of re
 ![image](https://i.imgur.com/jjin7P9.png)
 
 ## Individual Contribution (Function-wise)
-Nicolas Lozano: main(), safety()
-Muhammad Ali: main(), realFile(), runThread(), getSinglePointer(), getDoublePointer();
 
-### view contribution list
+* Nicolas Lozano: main(), safety()
+* Muhammad Ali: main(), realFile(), runThread(), getSinglePointer(), getDoublePointer();
+
+### view contribution history for full overview
 
 ## Features
 
