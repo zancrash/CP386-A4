@@ -19,7 +19,7 @@ To execute the compiled program, run the file name, followed by the number of re
   ```
 
 ## Screenshots
-![image] (https://i.imgur.com/jjin7P9.png)
+![image](https://i.imgur.com/jjin7P9.png)
 
 ## Individual Contribution (Function-wise)
 Nicolas Lozano: main(), safety()
