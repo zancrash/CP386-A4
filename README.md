@@ -31,7 +31,7 @@ Muhammad Ali: main(), realFile(), runThread(), getSinglePointer(), getDoublePoin
 
 * RQ - Request resources to fill allocation array
 * RL - Release Resources and update data structures
-* 'Status' - Display current state
+* Status - Display current state
 * Run - Exectute threads in a safe sequence 
 * Exit - Exit out of program
 
